@@ -1,0 +1,195 @@
+#include<stdio.h>
+#include<stdlib.h>
+typedef struct data
+{
+    char *name;
+    int age;
+    float salary;
+}data;
+
+void add_employe(data list[],int count);
+void view_list(data list[],int count);
+void delete(data list[],int count);
+void edit_data(data list[],int count);
+
+void add_employe(data list[],int count)
+{
+    int i;
+    char c;
+    system("cls");
+    FILE *information,*countemployee;
+    printf("Enter Name : ");
+    fflush(stdin);
+    list[count].name=malloc(40);
+    scanf("%s",list[count].name);
+    printf("Enter Age : ");
+    scanf("%d",&list[count].age);
+    printf("Enter Salary : ");
+    scanf("%f",&list[count].salary);
+    information=fopen("Employee Information.txt","a");
+    fprintf(information,"%s\n",list[count].name);
+    fprintf(information,"%d\n",list[count].age);
+    fprintf(information,"%f\n",list[count].salary);
+    fclose(information);
+    count++;
+    countemployee=fopen("Employee Count.txt","w");
+    fprintf(countemployee,"%d",count);
+    fclose(countemployee);
+    printf("Employee Data Is Successfully Added\n");
+    fflush(stdin);
+    scanf("%c",&c);
+}
+
+void view_list(data list[],int count)
+{
+    int i;
+    char c;
+    system("cls");
+    if(count==0){
+        printf("No Data Available\n");
+        fflush(stdin);
+        scanf("%c",&c);
+        return;
+    }
+    printf("\tName\tAge\tSalary\n");
+    for(i=0;i<count;i++){
+        printf("\t%s\t%d\t%0.2f\n",list[i].name,list[i].age,list[i].salary);
+    }
+    printf("Click enter to return back");
+    fflush(stdin);
+    scanf("%c",&c);
+    return;
+}
+
+void delete(data list[],int count)
+{
+    int i,num;
+    char c;
+    FILE *information,*countemployee;
+    system("cls");
+    if(count==0){
+        printf("No Data Available\n");
+        fflush(stdin);
+        scanf("%c",&c);
+        return;
+    }
+    printf("\tName\tAge\tSalary\n");
+    for(i=0;i<count;i++){
+        printf(" %d.\t%s\t%d\t%0.2f\n",i+1,list[i].name,list[i].age,list[i].salary);
+    }
+    printf("Enter Serial Number To Delete : ");
+    scanf("%d",&num);
+    for(i=num-1;i<count;i++){
+       list[i].name=list[i+1].name;
+       list[i].age=list[i+1].age;
+       list[i].salary=list[i+1].salary;
+    }
+    count--;
+    countemployee=fopen("Employee Count.txt","w");
+    fprintf(countemployee,"%d",count);
+    fclose(countemployee);
+    information=remove("Employee Information.txt");
+    information=fopen("Employee Information.txt","a");
+    for(i=0;i<count;i++){
+      fprintf(information,"%s\n",list[i].name);
+      fprintf(information,"%d\n",list[i].age);
+      fprintf(information,"%f\n",list[i].salary);
+    }
+    fclose(information);
+    printf("Employee Data Is Successfully Deleted\n");
+    fflush(stdin);
+    scanf("%c",&c);
+    return;
+}
+
+void edit_data(data list[],int count)
+{
+    int i,num;
+    char c;
+    FILE *information;
+    system("cls");
+    if(count==0){
+        printf("No Data Available\n");
+        fflush(stdin);
+        scanf("%c",&c);
+        return;
+    }
+    printf("\tName\tAge\tSalary\n");
+    for(i=0;i<count;i++){
+        printf(" %d.\t%s\t%d\t%0.2f\n",i+1,list[i].name,list[i].age,list[i].salary);
+    }
+    printf("Enter Serial Number To Edit : ");
+    scanf("%d",&num);
+    printf("Enter Name : ");
+    fflush(stdin);
+    list[num-1].name=malloc(40);
+    scanf("%s",list[num-1].name);
+    printf("Enter Age : ");
+    scanf("%d",&list[num-1].age);
+    printf("Enter Salary : ");
+    scanf("%f",&list[num-1].salary);
+    information=remove("Employee Information.txt");
+    information=fopen("Employee Information.txt","a");
+    for(i=0;i<count;i++){
+      fprintf(information,"%s\n",list[i].name);
+      fprintf(information,"%d\n",list[i].age);
+      fprintf(information,"%f\n",list[i].salary);
+    }
+    fclose(information);
+    printf("Employee Data Is Successfully Edited\n");
+    fflush(stdin);
+    scanf("%c",&c);
+    return;
+}
+
+void main()
+{
+    data list[200];
+    int count=0,choice,i;
+    char c;
+    FILE *information,*countemployee;
+    while(1)
+    {
+        countemployee=fopen("Employee Count.txt","r");
+        fscanf(countemployee,"%d",&count);
+        fclose(countemployee);
+        information=fopen("Employee Information.txt","r");
+        for(i=0;i<count;i++){
+            list[i].name=malloc(40);
+            fscanf(information,"%s",list[i].name);
+            fscanf(information,"%d",&list[i].age);
+            fscanf(information,"%f",&list[i].salary);
+        }
+        fclose(information);
+        system("cls");
+        printf("1. Add Employee\n");
+        printf("2. Delete Employee\n");
+        printf("3. View Employee List\n");
+        printf("4. Edit Employee\n");
+        printf("5. Exit\n");
+        printf("\nEnter Your Choice : ");
+        scanf("%d",&choice);
+        switch(choice)
+        {
+        case 1:
+            add_employe(list,count);
+            break;
+        case 2:
+            delete(list,count);
+            break;
+        case 3:
+            view_list(list,count);
+            break;
+        case 4:
+            edit_data(list,count);
+            break;
+        case 5:
+            exit(1);
+        default :
+            printf("Wrong Input. Try Again ");
+            fflush(stdin);
+            scanf("%c",&c);
+        }
+    }
+}
+
